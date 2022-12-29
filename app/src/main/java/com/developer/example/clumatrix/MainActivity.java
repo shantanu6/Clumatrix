@@ -33,12 +33,6 @@ public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     ConstraintLayout login;
 
-    KeyGenerator keyGenerator;
-    SecretKey secretKey;
-    byte[] IV = new byte[16];
-    SecureRandom random;
-    String TAG="Login";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,24 +42,6 @@ public class MainActivity extends AppCompatActivity {
         edtPass=findViewById(R.id.edtPass);
         btnLogin=findViewById(R.id.btnLogin);
         login=findViewById(R.id.login);
-
-        try {
-            keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(256);
-            secretKey = keyGenerator.generateKey();
-
-            random = new SecureRandom();
-            random.nextBytes(IV);
-
-            byte[] encrypt = encrypt("Shantanu".getBytes(), secretKey, IV);
-            String encryptText = new String(encrypt, "UTF-8");
-            Log.d(TAG, "encrypt : "+encrypt);
-            String decrypt = decrypt(encrypt, secretKey, IV);
-            Log.d(TAG, "decrypt : "+decrypt);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,29 +65,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    public static byte[] encrypt(byte[] plaintext, SecretKey key, byte[] IV) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES");
-        SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(), "AES");
-        IvParameterSpec ivSpec = new IvParameterSpec(IV);
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-        byte[] cipherText = cipher.doFinal(plaintext);
-        return cipherText;
-    }
-
-    public static String decrypt(byte[] cipherText, SecretKey key, byte[] IV) {
-        try {
-            Cipher cipher = Cipher.getInstance("AES");
-            SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(), "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(IV);
-            cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
-            byte[] decryptedText = cipher.doFinal(cipherText);
-            return new String(decryptedText);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
 }
